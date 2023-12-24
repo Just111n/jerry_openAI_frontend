@@ -1,47 +1,10 @@
 import "./App.css";
-import {
-  Box,
-  CssBaseline,
-  Divider,
-  Paper,
-  ThemeProvider,
-  styled,
-} from "@mui/material";
+import { Box, CssBaseline, ThemeProvider, styled } from "@mui/material";
 import { ColorModeContext } from "./theme/ColorModeContext";
 import { useMode } from "./theme/useMode";
 import { getColorsFromMode } from "./theme/getColorsFromMode";
-import StopIcon from "@mui/icons-material/Stop";
-import ChatRoomInput from "./components/ChatRoomInput";
-import Navbar from "./components/NavBar";
-
-const initialOptions = {
-  llmModel: "GPT-3.5",
-  webAccess: false,
-  temperatureValue: "0.7",
-};
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  paddingTop: theme.spacing(2),
-  paddingBottom: theme.spacing(2),
-  paddingLeft: theme.spacing(2),
-  borderRadius: "16px",
-  width: "100%",
-  height: "100%",
-  boxSizing: "border-box",
-}));
-
-const ChatRoom = () => {
-  return (
-    <StyledPaper>
-      {/* <ChatRoomHeader /> */}
-      <Divider />
-      {/* <ChatRoomMessages /> */}
-      <ChatRoomInput />
-    </StyledPaper>
-  );
-};
+import Navbar from "./components/Navbar";
+import ChatRoom from "./components/ChatRoom";
 
 const MainBox = styled(Box)(({ theme }) => ({
   display: "flex",
