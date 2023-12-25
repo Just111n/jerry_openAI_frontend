@@ -6,8 +6,15 @@ import {
   styled,
 } from "@mui/material";
 import { Send } from "@mui/icons-material";
+import StopIcon from "@mui/icons-material/Stop";
 import { useState } from "react";
-import { useAppSelector } from "../redux/store";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { addMessageToSelectedRoom } from "../redux/selectedChatRoomMessageList/selectedChatRoomMessageListSlice";
+import sendPrompt from "../services/sendPrompt";
+import {
+  startLoading,
+  stopLoading,
+} from "../redux/isBotLoadingResponse/isBotLoadingResponseSlice";
 
 const InputContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -37,38 +44,48 @@ const ChatRoomInput = () => {
   const isBotLoadingResponse = useAppSelector(
     (state) => state.isBotLoadingResponseReducer
   );
-  console.log(isBotLoadingResponse);
   const [message, setMessage] = useState("");
+  const dispatch = useAppDispatch();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
-    console.log("submitting prompt");
+  const handleSubmit = async () => {
+    try {
+      console.log("submitting prompt");
 
-    // Retrieve existing messages from session storage
-    const storedMessages =
-      JSON.parse(sessionStorage.getItem("chatMessages") || "") || [];
+      // Check if the message is empty
+      if (message.trim() === "") {
+        console.log("Empty message. Not submitting.");
+        return; // Exit the function if the message is empty
+      }
 
-    // Define the new message you want to add
-    const newMessage = {
-      isLocalParticipant: true,
-      message: "Your new message",
-    };
+      const newMessage = {
+        isLocalParticipant: true,
+        message: message,
+      };
 
-    // Update the messages array
-    const updatedMessages = [...storedMessages, newMessage];
+      dispatch(addMessageToSelectedRoom(newMessage));
+      setMessage("");
+      dispatch(startLoading());
 
-    // Save the updated messages back to session storage
-    sessionStorage.setItem("chatMessages", JSON.stringify(updatedMessages));
+      const data = await sendPrompt(message);
+      const newMessage2 = {
+        isLocalParticipant: false,
+        message: data.response,
+      };
+      dispatch(addMessageToSelectedRoom(newMessage2));
+      dispatch(stopLoading());
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: any) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     setMessage(e.target.value);
   };
 
@@ -88,8 +105,7 @@ const ChatRoomInput = () => {
           endAdornment: (
             <InputAdornment position="end">
               <SendIconButton size="small" type="submit" aria-label="send">
-                {/* {isBotLoadingResponse ? <StopIcon /> : <Send />} */}
-                <Send />
+                {isBotLoadingResponse ? <StopIcon /> : <Send />}
               </SendIconButton>
             </InputAdornment>
           ),

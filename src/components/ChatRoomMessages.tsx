@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { Box, styled, Fade, Fab } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ChatMessage from "./ChatMessage";
+import { useAppSelector } from "../redux/store";
 
 const ChatMessagesContainer = styled(Box)(() => ({
   overflow: "auto",
@@ -11,8 +12,8 @@ const ChatMessagesContainer = styled(Box)(() => ({
 }));
 
 const DUMMUY_DATA = [
-  { isLocalParticiapnt: true, message: "hello" },
-  { isLocalParticiapnt: true, message: "hello" },
+  { isLocalParticipant: true, message: "hello" },
+  { isLocalParticipant: true, message: "hello" },
 ];
 
 function ScrollDown(props: { children: ReactNode; containerId: string }) {
@@ -59,44 +60,20 @@ function ScrollDown(props: { children: ReactNode; containerId: string }) {
 }
 
 const ChatRoomMessages = ({ ...boxProps }) => {
-  useEffect(() => {
-    const initialChatMessages = [
-      { isLocalParticipant: true, message: "this is an initail message" },
-      { isLocalParticipant: true, message: "hello" },
-    ];
-
-    sessionStorage.setItem("chatMessages", JSON.stringify(initialChatMessages));
-  }, []);
-  const isBotLoadingResponse = true;
-  const chatMessagesData = JSON.parse(
-    sessionStorage.getItem("chatMessages") || "[]"
-  ) as { isLocalParticipant: boolean; message: string }[];
-
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === "chatMessages") {
-        // Do something when 'chatMessages' changes
-        console.log("Session Storage 'chatMessages' updated:", e.newValue);
-        // You can parse and use the updated value as needed
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
-  const chatMessages = chatMessagesData.map(
-    (item: { isLocalParticipant: boolean; message: string }, index: number) => (
-      <ChatMessage
-        key={index.toString()}
-        isLocalParticipant={item.isLocalParticipant}
-        message={item.message}
-      />
-    )
+  const isBotLoadingResponse = useAppSelector(
+    (state) => state.isBotLoadingResponseReducer
   );
+  const chatMessagesData = useAppSelector(
+    (state) => state.selectedChatRoomMessageListReducer
+  );
+
+  const chatMessages = chatMessagesData.map((item, index) => (
+    <ChatMessage
+      key={index.toString()}
+      isLocalParticipant={item.isLocalParticipant}
+      message={item.message}
+    />
+  ));
 
   return (
     <>

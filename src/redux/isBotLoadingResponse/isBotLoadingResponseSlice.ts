@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { APP_SLICE } from "../../constants/common-constants";
+
 // Define the initial state
 const initialState = false;
 

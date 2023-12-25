@@ -13,7 +13,6 @@ const store = configureStore({
     }),
 });
 
-// Create a persistor
 
 // Re-export useSelector and useDispatch hooks
 export const useAppSelector = useSelector;
