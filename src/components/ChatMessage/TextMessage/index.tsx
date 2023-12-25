@@ -67,10 +67,6 @@ const TextMessage = ({ isLocalParticipant, children }) => {
             edge="end"
             aria-label="delete"
             onClick={() => console.log("like is clicked!")}
-            // sx={{
-            //   backgroundColor: "#4189fa",
-            //   color: "white",
-            // }}
           >
             <ThumbUpOutlinedIcon />
           </StyledIconButton>

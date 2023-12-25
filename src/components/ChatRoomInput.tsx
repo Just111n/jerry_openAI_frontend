@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import { useState } from "react";
+import { useAppSelector } from "../redux/store";
 
 const InputContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -33,10 +34,31 @@ const SendIconButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 const ChatRoomInput = () => {
+  const isBotLoadingResponse = useAppSelector(
+    (state) => state.isBotLoadingResponseReducer
+  );
+  console.log(isBotLoadingResponse);
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent default form submission behavior
     console.log("submitting prompt");
+
+    // Retrieve existing messages from session storage
+    const storedMessages =
+      JSON.parse(sessionStorage.getItem("chatMessages") || "") || [];
+
+    // Define the new message you want to add
+    const newMessage = {
+      isLocalParticipant: true,
+      message: "Your new message",
+    };
+
+    // Update the messages array
+    const updatedMessages = [...storedMessages, newMessage];
+
+    // Save the updated messages back to session storage
+    sessionStorage.setItem("chatMessages", JSON.stringify(updatedMessages));
   };
 
   const handleKeyDown = (e) => {

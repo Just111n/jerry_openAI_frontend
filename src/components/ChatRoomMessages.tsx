@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Box, styled, Fade, Fab } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { CHAT_MESSAGES_DUMMY_DATA } from "./DUMMY_DATA";
 import ChatMessage from "./ChatMessage";
 
 const ChatMessagesContainer = styled(Box)(() => ({
@@ -10,6 +9,11 @@ const ChatMessagesContainer = styled(Box)(() => ({
   flexDirection: "column-reverse",
   height: "100%",
 }));
+
+const DUMMUY_DATA = [
+  { isLocalParticiapnt: true, message: "hello" },
+  { isLocalParticiapnt: true, message: "hello" },
+];
 
 function ScrollDown(props: { children: ReactNode; containerId: string }) {
   const { children, containerId } = props;
@@ -55,29 +59,52 @@ function ScrollDown(props: { children: ReactNode; containerId: string }) {
 }
 
 const ChatRoomMessages = ({ ...boxProps }) => {
+  useEffect(() => {
+    const initialChatMessages = [
+      { isLocalParticipant: true, message: "this is an initail message" },
+      { isLocalParticipant: true, message: "hello" },
+    ];
+
+    sessionStorage.setItem("chatMessages", JSON.stringify(initialChatMessages));
+  }, []);
   const isBotLoadingResponse = true;
-  const DUMMUY_MESSAGES = CHAT_MESSAGES_DUMMY_DATA.map((item, index) => (
-    <ChatMessage
-      key={index.toString()}
-      isLocalParticipant={item.isLocalParticiapnt}
-      message={item.message}
-      isFirstMessageOfTheDay={item.isFirstMessageOfTheDay}
-      showAvatar={item.showAvatar}
-      time={item.time}
-      showTime={item.showTime}
-    />
-  ));
+  const chatMessagesData = JSON.parse(
+    sessionStorage.getItem("chatMessages") || "[]"
+  ) as { isLocalParticipant: boolean; message: string }[];
+
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "chatMessages") {
+        // Do something when 'chatMessages' changes
+        console.log("Session Storage 'chatMessages' updated:", e.newValue);
+        // You can parse and use the updated value as needed
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  const chatMessages = chatMessagesData.map(
+    (item: { isLocalParticipant: boolean; message: string }, index: number) => (
+      <ChatMessage
+        key={index.toString()}
+        isLocalParticipant={item.isLocalParticipant}
+        message={item.message}
+      />
+    )
+  );
+
   return (
     <>
       <ChatMessagesContainer {...boxProps} id="back-to-top-anchor">
         {isBotLoadingResponse && (
-          <ChatMessage
-            isLocalParticipant={false}
-            showAvatar={true}
-            isSkeleton={true}
-          />
+          <ChatMessage isLocalParticipant={false} isSkeleton={true} />
         )}
-        {DUMMUY_MESSAGES}
+        {chatMessages}
       </ChatMessagesContainer>
       <ScrollDown containerId="back-to-top-anchor">
         <Fab size="small" aria-label="scroll down" color="primary">
