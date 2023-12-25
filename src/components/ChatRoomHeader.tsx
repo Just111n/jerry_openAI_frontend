@@ -41,9 +41,7 @@ function ChatRoomHeader() {
     sessionStorage.clear();
   };
 
-  const handleDelete = async (chatRoomId) => {};
-
-  const handleDeleteClick = (event) => {};
+  const handleDeleteClick = () => {};
   const chatRoomName = "New Chat";
 
   const time = "10:01 PM, 10/05/2023";

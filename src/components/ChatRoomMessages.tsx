@@ -11,11 +11,6 @@ const ChatMessagesContainer = styled(Box)(() => ({
   height: "100%",
 }));
 
-const DUMMUY_DATA = [
-  { isLocalParticipant: true, message: "hello" },
-  { isLocalParticipant: true, message: "hello" },
-];
-
 function ScrollDown(props: { children: ReactNode; containerId: string }) {
   const { children, containerId } = props;
   const [showButton, setShowButton] = useState(false);

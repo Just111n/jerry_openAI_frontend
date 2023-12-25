@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, TypedUseSelectorHook } from "react-redux";
 import rootReducer from "./rootReducer";
 
 // Configure the store
@@ -13,9 +13,11 @@ const store = configureStore({
     }),
 });
 
-
 // Re-export useSelector and useDispatch hooks
-export const useAppSelector = useSelector;
-export const useAppDispatch = () => useDispatch();
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export const useAppDispatch: () => AppDispatch = useDispatch;
 
 export default store;

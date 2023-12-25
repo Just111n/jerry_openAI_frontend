@@ -7,6 +7,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Typography,
   useTheme,
 } from "@mui/material";
 import { DARK } from "../constants/common-constants";
@@ -39,6 +40,14 @@ const Navbar = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+          >
+            Jerry Open AI Chatbot
+          </Typography>
           <IconButton>
             <SettingsOutlinedIcon />
           </IconButton>

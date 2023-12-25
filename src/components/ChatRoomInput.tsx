@@ -15,6 +15,7 @@ import {
   startLoading,
   stopLoading,
 } from "../redux/isBotLoadingResponse/isBotLoadingResponseSlice";
+import { ChatMessageType } from "../types/types";
 
 const InputContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -40,6 +41,14 @@ const SendIconButton = styled(IconButton)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark,
   },
 }));
+
+function createChatMessageObject(
+  isLocalParticipant: boolean,
+  message: string
+): ChatMessageType {
+  return { isLocalParticipant, message };
+}
+
 const ChatRoomInput = () => {
   const isBotLoadingResponse = useAppSelector(
     (state) => state.isBotLoadingResponseReducer
@@ -49,43 +58,42 @@ const ChatRoomInput = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log("submitting prompt");
+      console.log("Submitting prompt");
 
-      // Check if the message is empty
       if (message.trim() === "") {
         console.log("Empty message. Not submitting.");
-        return; // Exit the function if the message is empty
+        return;
       }
 
-      const newMessage = {
-        isLocalParticipant: true,
-        message: message,
-      };
-
-      dispatch(addMessageToSelectedRoom(newMessage));
+      const userMessage = createChatMessageObject(true, message);
+      dispatch(addMessageToSelectedRoom(userMessage));
       setMessage("");
       dispatch(startLoading());
 
       const data = await sendPrompt(message);
-      const newMessage2 = {
-        isLocalParticipant: false,
-        message: data.response,
-      };
-      dispatch(addMessageToSelectedRoom(newMessage2));
-      dispatch(stopLoading());
+      const { response } = data;
+      const botMessage = createChatMessageObject(false, response);
+      dispatch(addMessageToSelectedRoom(botMessage));
     } catch (error) {
-      console.log(error);
+      console.error("Error in handleSubmit:", error);
+      const botMessage = createChatMessageObject(
+        false,
+        (error as Error).message
+      );
+      dispatch(addMessageToSelectedRoom(botMessage));
+    } finally {
+      dispatch(stopLoading());
     }
   };
 
-  const handleKeyDown = (e: any) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
   };
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
 
